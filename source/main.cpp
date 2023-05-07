@@ -3,6 +3,88 @@
 #include <core/components/mesh.h>
 #include <core/components/text.h>
 
+class MainMenuScene : public IScene
+{  
+private:
+    Camera *camera;
+    Sprite *cursor;
+    Text *text;
+    Text *option1;
+    Text *option2;
+    Text *option3;
+
+    Text *selector;
+
+    int option;
+
+public:
+    MainMenuScene();
+    void Init();
+    void Update();
+    void UpdateAfterPhysics();
+};
+
+MainMenuScene::MainMenuScene()
+{
+}
+
+void MainMenuScene::Init()
+{
+    camera = new Camera();
+    cursor = new Sprite("data/cursor.png");
+    text = new Text("METROIDVANIA", 500, 100);
+
+    option1 = new Text("START GAME", 510, 300);
+    option2 = new Text("FULLSCREEN", 500, 400);
+    option3 = new Text("QUIT", 580, 500);
+
+    selector = new Text(">           <", 470, 300);
+
+    components.Add(camera);
+    components.Add(cursor);
+    components.Add(text);
+
+    components.Add(option1);
+    components.Add(option2);
+    components.Add(option3);
+
+    components.Add(selector);
+
+    option = 1;
+}
+
+void MainMenuScene::Update()
+{
+    cursor->x = input.Mouse.x;
+    cursor->y = input.Mouse.y;
+
+    if (option > 1)
+    {
+        if (input.Pressed(input.Key.W))
+        {
+            selector->y -= 100;
+            option--;
+        }
+    }
+    if (option < 3)
+    {
+        if (input.Pressed(input.Key.S))
+        {
+            selector->y += 100;
+            option++;
+        }
+    }
+
+    if (input.Pressed(input.Key.ENTER))
+    {
+        Log("Option: " + option);
+    }
+}
+
+void MainMenuScene::UpdateAfterPhysics()
+{
+}
+
 class PauseScene : public IScene
 {  
 private:
@@ -134,7 +216,6 @@ void SplashScreen::Update()
     if (int(timer->TimeSinceStarted()) > 3000)
     {
         Application::NextScene();
-        Log("Next Scene");
     }
 }
 
@@ -146,6 +227,7 @@ int main(int argc, char **argv)
 {
     Application application(argc, argv);
 
+    application.AddScene(new MainMenuScene());
     application.AddScene(new PauseScene());
     application.AddScene(new SplashScreen());
     application.AddScene(new FirstScene());
