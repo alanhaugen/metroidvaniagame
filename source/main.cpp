@@ -1,6 +1,46 @@
 #include <core/application.h>
 #include <core/components/actor.h>
 #include <core/components/mesh.h>
+#include <core/components/text.h>
+
+class PauseScene : public IScene
+{  
+private:
+    Camera *camera;
+    Sprite *cursor;
+    Text *text;
+
+public:
+    PauseScene();
+    void Init();
+    void Update();
+    void UpdateAfterPhysics();
+};
+
+PauseScene::PauseScene()
+{
+}
+
+void PauseScene::Init()
+{
+    camera = new Camera();
+    cursor = new Sprite("data/cursor.png");
+    text = new Text("PAUSE", 500, 100);
+
+    components.Add(camera);
+    components.Add(cursor);
+    components.Add(text);
+}
+
+void PauseScene::Update()
+{
+    cursor->x = input.Mouse.x;
+    cursor->y = input.Mouse.y;
+}
+
+void PauseScene::UpdateAfterPhysics()
+{
+}
 
 class FirstScene : public IScene
 {  
@@ -106,6 +146,7 @@ int main(int argc, char **argv)
 {
     Application application(argc, argv);
 
+    application.AddScene(new PauseScene());
     application.AddScene(new SplashScreen());
     application.AddScene(new FirstScene());
 
