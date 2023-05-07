@@ -1,0 +1,69 @@
+# Data folder
+data
+ 
+# Build results
+build/
+bin/
+bin
+intermediate
+
+# Don't include generated documentation
+docs/html
+docs/latex
+docs/doxygen_sqlite3.db
+
+# QtCreator
+*.autosave
+*.user
+app-template.*
+
+# Vim
+*.swp
+
+# Cafe stuff
+app.xml
+cos.xml
+*.rpx
+*.rpl
+*.elf
+#*.a
+*.o
+*.d
+*.d.bak
+*.dle
+*.dbo
+*.ddf
+*.dla
+*.dlf
+*.dnm
+*.dsf
+*.map
+*.rcf
+*.dep
+*.ti
+
+# =========================
+# Windows generated
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# MSVC
+
+*.EXE
+*.ilk
+*.pdb
+
+# =========================
+# Mac generated
+# =========================
+.DS_Store
+
