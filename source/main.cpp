@@ -75,9 +75,9 @@ void MainMenuScene::Update()
         }
     }
 
-    if (input.Pressed(input.Key.ENTER))
+    if (input.Pressed(input.Key.F))
     {
-        Log("Option: " + option);
+        Application::NextScene();
     }
 }
 
@@ -227,9 +227,9 @@ int main(int argc, char **argv)
 {
     Application application(argc, argv);
 
+    application.AddScene(new SplashScreen());
     application.AddScene(new MainMenuScene());
     application.AddScene(new PauseScene());
-    application.AddScene(new SplashScreen());
     application.AddScene(new FirstScene());
 
     return application.Exec();
