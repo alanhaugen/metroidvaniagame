@@ -141,6 +141,8 @@ private:
     Camera *camera;
     Sprite *cursor;
     Actor *protagonist;
+    Mesh *pawn;
+    Mesh *gun;
 
 public:
     FirstScene();
@@ -159,15 +161,29 @@ void FirstScene::Init()
     cursor = new Sprite("data/cursor.png");
     protagonist = new Actor();
     protagonist->Add(new Mesh("data/king.blend"));
+    gun = new Mesh("data/queen.blend");
+    //gun->Rotate(45,0,0);
+    pawn = new Mesh("data/pawn.blend");
+    pawn->Hide();
+    protagonist->Add(gun);
     components.Add(camera);
     components.Add(cursor);
     components.Add(protagonist);
+    components.Add(pawn);
 }
 
 void FirstScene::Update()
 {
     cursor->x = input.Mouse.x;
     cursor->y = input.Mouse.y;
+
+    pawn->matrix.Translate(glm::vec3(1.9, 0.0, 0.0));
+
+    if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
+    {
+        pawn->Show();
+        pawn->matrix.matrix[3] = protagonist->matrix.matrix[3];
+    }
 
     if (input.Held(input.Key.A))
     {
