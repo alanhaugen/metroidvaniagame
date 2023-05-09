@@ -144,10 +144,10 @@ FirstScene::FirstScene()
 
 void FirstScene::Init()
 {
-    camera = new Camera();
+    camera = new Camera(glm::vec3(0, -3, 0), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
     cursor = new Sprite("data/cursor.png");
     protagonist = new Actor();
-//    protagonist->Add(new Mesh("data/protagonist.blender"));
+    protagonist->Add(new Mesh("data/king.blend"));
     components.Add(camera);
     components.Add(cursor);
     components.Add(protagonist);
@@ -161,22 +161,18 @@ void FirstScene::Update()
     if (input.Held(input.Key.A))
     {
         protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 0.0));
-        Log("Left");
     }
     if (input.Held(input.Key.D))
     {
         protagonist->matrix.Translate(glm::vec3(-1.0, 0.0, 0.0));
-        Log("Right");
     }
     if (input.Held(input.Key.W))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, 1.0));
-        Log("Up");
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -1.0));
     }
     if (input.Held(input.Key.S))
     {
-        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, -1.0));
-        Log("Down");
+        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 1.0));
     }
 }
 
@@ -229,8 +225,8 @@ int main(int argc, char **argv)
 
     application.AddScene(new SplashScreen());
     application.AddScene(new MainMenuScene());
-    application.AddScene(new PauseScene());
     application.AddScene(new FirstScene());
+    application.AddScene(new PauseScene());
 
     return application.Exec();
 }
