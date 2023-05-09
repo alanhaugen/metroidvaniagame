@@ -77,7 +77,18 @@ void MainMenuScene::Update()
 
     if (input.Pressed(input.Key.F))
     {
-        Application::NextScene();
+        if (option == 1)
+        {
+            Application::NextScene();
+        }
+        else if (option == 2)
+        {
+            Application::fullscreen = true;
+        }
+        else if (option == 3)
+        {
+            Application::Quit();
+        }
     }
 }
 
@@ -125,7 +136,7 @@ void PauseScene::UpdateAfterPhysics()
 }
 
 class FirstScene : public IScene
-{  
+{
 private:
     Camera *camera;
     Sprite *cursor;
@@ -160,11 +171,11 @@ void FirstScene::Update()
 
     if (input.Held(input.Key.A))
     {
-        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(-1.0, 0.0, 0.0));
     }
     if (input.Held(input.Key.D))
     {
-        protagonist->matrix.Translate(glm::vec3(-1.0, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 0.0));
     }
     if (input.Held(input.Key.W))
     {
@@ -172,11 +183,82 @@ void FirstScene::Update()
     }
     if (input.Held(input.Key.S))
     {
-        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 1.0));
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, 1.0));
     }
 }
 
 void FirstScene::UpdateAfterPhysics()
+{
+}
+
+class Game : public IScene
+{
+private:
+    IScene *pauseScreen;
+    IScene *firstScreen;
+    IScene *activeScene;
+    bool paused;
+
+public:
+    Game();
+    void Init();
+    void Update();
+    void UpdateAfterPhysics();
+};
+
+Game::Game()
+{
+}
+
+void Game::Init()
+{
+    pauseScreen = new PauseScene();
+    firstScreen = new FirstScene();
+
+    pauseScreen->Init();
+    firstScreen->Init();
+
+    paused = false;
+}
+
+void Game::Update()
+{
+    if (input.Pressed(input.Key.P))
+    {
+        paused = !paused;
+    }
+    else if (input.Pressed(input.Key.Q))
+    {
+        Application::Quit();
+    }
+
+    if (paused)
+    {
+        activeScene = pauseScreen;
+    }
+    else
+    {
+        activeScene = firstScreen;
+    }
+
+    // Update game components
+    for (unsigned int i = 0; i < activeScene->components.Size(); i++)
+    {
+        (*activeScene->components[i])->Update();
+    }
+
+    activeScene->Update();
+
+    activeScene->UpdateAfterPhysics();
+
+    // Update game components
+    for (unsigned int i = 0; i < activeScene->components.Size(); i++)
+    {
+        (*activeScene->components[i])->UpdateAfterPhysics();
+    }
+}
+
+void Game::UpdateAfterPhysics()
 {
 }
 
@@ -225,8 +307,7 @@ int main(int argc, char **argv)
 
     application.AddScene(new SplashScreen());
     application.AddScene(new MainMenuScene());
-    application.AddScene(new FirstScene());
-    application.AddScene(new PauseScene());
+    application.AddScene(new Game());
 
     return application.Exec();
 }
