@@ -34,11 +34,11 @@ void MainMenuScene::Init()
     cursor = new Sprite("data/cursor.png");
     text = new Text("METROIDVANIA", 500, 100);
 
-    option1 = new Text("START GAME", 510, 300);
+    option1 = new Text("START GAME", 500, 300);
     option2 = new Text("FULLSCREEN", 500, 400);
-    option3 = new Text("QUIT", 580, 500);
+    option3 = new Text("QUIT", 500, 500);
 
-    selector = new Text(">           <", 470, 300);
+    selector = new Text(">", 470, 300);
 
     components.Add(camera);
     components.Add(cursor);
@@ -144,7 +144,7 @@ FirstScene::FirstScene()
 
 void FirstScene::Init()
 {
-    camera = new Camera(glm::vec3(0, -3, 0), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
+    camera = new Camera(glm::vec3(0, 3, 15), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
     cursor = new Sprite("data/cursor.png");
     protagonist = new Actor();
     protagonist->Add(new Mesh("data/king.blend"));
