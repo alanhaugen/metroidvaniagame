@@ -60,7 +60,7 @@ void MainMenuScene::Update()
 
     if (option > 1)
     {
-        if (input.Pressed(input.Key.W))
+        if (input.Pressed(input.Key.W) || input.Pressed(input.Key.UP))
         {
             selector->y -= 100;
             option--;
@@ -68,14 +68,14 @@ void MainMenuScene::Update()
     }
     if (option < 3)
     {
-        if (input.Pressed(input.Key.S))
+        if (input.Pressed(input.Key.S) || input.Pressed(input.Key.DOWN))
         {
             selector->y += 100;
             option++;
         }
     }
 
-    if (input.Pressed(input.Key.F))
+    if (input.Pressed(input.Key.F) || input.Pressed(input.Key.ENTER))
     {
         if (option == 1)
         {
@@ -185,19 +185,19 @@ void FirstScene::Update()
         pawn->matrix.matrix[3] = protagonist->matrix.matrix[3];
     }
 
-    if (input.Held(input.Key.A))
+    if (input.Held(input.Key.A) || input.Held(input.Key.LEFT))
     {
         protagonist->matrix.Translate(glm::vec3(-1.0, 0.0, 0.0));
     }
-    if (input.Held(input.Key.D))
+    if (input.Held(input.Key.D) || input.Held(input.Key.RIGHT))
     {
         protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 0.0));
     }
-    if (input.Held(input.Key.W))
+    if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
         protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -1.0));
     }
-    if (input.Held(input.Key.S))
+    if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
         protagonist->matrix.Translate(glm::vec3(0.0, 0.0, 1.0));
     }
@@ -243,7 +243,7 @@ void Game::Update()
     {
         paused = !paused;
     }
-    else if (input.Pressed(input.Key.Q))
+    else if (input.Pressed(input.Key.Q) || input.Pressed(input.Key.ESCAPE))
     {
         Application::Quit();
     }
