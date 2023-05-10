@@ -2,6 +2,7 @@
 #include <core/components/actor.h>
 #include <core/components/mesh.h>
 #include <core/components/text.h>
+#include <core/components/pointlight.h>
 
 class MainMenuScene : public IScene
 {  
@@ -140,8 +141,10 @@ class FirstScene : public IScene
 private:
     Camera *camera;
     Sprite *cursor;
+    PointLight *light;
     Actor *protagonist;
     Mesh *pawn;
+    Mesh *room;
     Mesh *gun;
 
 public:
@@ -160,8 +163,21 @@ void FirstScene::Init()
     camera = new Camera(glm::vec3(0, 3, 15), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
     cursor = new Sprite("data/cursor.png");
     protagonist = new Actor();
-    protagonist->Add(new Mesh("data/king.blend"));
-    gun = new Mesh("data/queen.blend");
+    protagonist->Add(new Mesh("data/king.blend",
+                    "data/phong.vert",
+                    "data/phong.frag"));
+    protagonist->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
+    protagonist->matrix.Translate(glm::vec3(0,-7,-10));
+    light = new PointLight(glm::vec3(-9.683014, 16.498363, 7.318779));
+    gun = new Mesh("data/queen.blend",
+                   "data/phong.vert",
+                   "data/phong.frag");
+    room = new Mesh("data/room.blend",
+                    "data/phong.vert",
+                    "data/phong.frag");
+    room->matrix.Translate(glm::vec3(0,0,-30));
+    room->Uniform("colour", glm::vec4(0.9, 0.7, 0.4, 1.0));
+    gun->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
     //gun->Rotate(45,0,0);
     pawn = new Mesh("data/pawn.blend");
     pawn->Hide();
@@ -169,6 +185,7 @@ void FirstScene::Init()
     components.Add(camera);
     components.Add(cursor);
     components.Add(protagonist);
+    components.Add(room);
     components.Add(pawn);
 }
 
@@ -176,6 +193,11 @@ void FirstScene::Update()
 {
     cursor->x = input.Mouse.x;
     cursor->y = input.Mouse.y;
+
+    room->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
+    room->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
+    protagonist->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
+    protagonist->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
 
     pawn->matrix.Translate(glm::vec3(1.9, 0.0, 0.0));
 
