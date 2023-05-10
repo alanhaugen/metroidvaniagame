@@ -146,6 +146,7 @@ private:
     Mesh *pawn;
     Mesh *room;
     Mesh *gun;
+    Text *health;
 
 public:
     FirstScene();
@@ -162,6 +163,7 @@ void FirstScene::Init()
 {
     camera = new Camera(glm::vec3(0, 3, 15), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
     cursor = new Sprite("data/cursor.png");
+    health = new Text("100");
     protagonist = new Actor();
     protagonist->Add(new Mesh("data/king.blend",
                     "data/phong.vert",
@@ -187,6 +189,7 @@ void FirstScene::Init()
     components.Add(protagonist);
     components.Add(room);
     components.Add(pawn);
+    components.Add(health);
 }
 
 void FirstScene::Update()
@@ -209,19 +212,19 @@ void FirstScene::Update()
 
     if (input.Held(input.Key.A) || input.Held(input.Key.LEFT))
     {
-        protagonist->matrix.Translate(glm::vec3(-1.0, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(-.1 * deltaTime, 0.0, 0.0));
     }
     if (input.Held(input.Key.D) || input.Held(input.Key.RIGHT))
     {
-        protagonist->matrix.Translate(glm::vec3(1.0, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(.1 * deltaTime, 0.0, 0.0));
     }
     if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -1.0));
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.1 * deltaTime));
     }
     if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, 1.0));
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .1 * deltaTime));
     }
 }
 
