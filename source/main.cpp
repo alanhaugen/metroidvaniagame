@@ -212,19 +212,19 @@ void FirstScene::Update()
 
     if (input.Held(input.Key.A) || input.Held(input.Key.LEFT))
     {
-        protagonist->matrix.Translate(glm::vec3(-.1 * deltaTime, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(-.02 * deltaTime, 0.0, 0.0));
     }
     if (input.Held(input.Key.D) || input.Held(input.Key.RIGHT))
     {
-        protagonist->matrix.Translate(glm::vec3(.1 * deltaTime, 0.0, 0.0));
+        protagonist->matrix.Translate(glm::vec3(.02 * deltaTime, 0.0, 0.0));
     }
     if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.1 * deltaTime));
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.02 * deltaTime));
     }
     if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .1 * deltaTime));
+        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .02 * deltaTime));
     }
 }
 
@@ -328,6 +328,8 @@ void SplashScreen::Init()
     timer  = Application::GetTime();
     components.Add(splash);
     components.Add(camera);
+
+    audio->PlaySound("data/intro.wav");
 }
 
 void SplashScreen::Update()
