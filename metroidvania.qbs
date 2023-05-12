@@ -103,5 +103,7 @@ solid {
 
         Depends { name: "cpp" }
         Depends { name: "core" }
+        Depends { name: "nullphysics" }
+        Depends { name: "bulletphysics" }
     }
 }
