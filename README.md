@@ -4,6 +4,23 @@ Taking part in following jam:
 
 https://itch.io/jam/metroidvania-month-20
 
+* Recurring Dream
+* Infiltration
+* Fishing
+* Music Guide You
+* Hell
+
+* The year is 20xx
+* Revival
+* Renewed
+* Revisited
+* Powering Down
+
+Planet Earth... I called this place home once, long before evil haunted the planes and waters. 
+-- You
+
+Now, I shall finally tell the tale of my revival... My revived planet earth.
+
 ![Alt Text](output.gif)
 
 # Instructions

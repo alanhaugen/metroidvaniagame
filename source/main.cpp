@@ -3,6 +3,8 @@
 #include <core/components/mesh.h>
 #include <core/components/text.h>
 #include <core/components/pointlight.h>
+#include <core/components/cube.h>
+#include <core/components/grid.h>
 
 class MainMenuScene : public IScene
 {  
@@ -147,6 +149,7 @@ private:
     Mesh *room;
     Mesh *gun;
     Text *health;
+    bool dir;
 
 public:
     FirstScene();
@@ -187,9 +190,77 @@ void FirstScene::Init()
     components.Add(camera);
     components.Add(cursor);
     components.Add(protagonist);
-    components.Add(room);
+    //components.Add(room);
     components.Add(pawn);
     components.Add(health);
+
+    Grid level(32, 32);
+
+    unsigned int CUBE = 1;
+
+    level.At(0,0) = CUBE;
+    level.At(1,0) = CUBE;
+    level.At(2,0) = CUBE;
+    level.At(3,0) = CUBE;
+    level.At(4,0) = CUBE;
+    level.At(5,0) = CUBE;
+    level.At(6,0) = CUBE;
+    level.At(7,0) = CUBE;
+    level.At(8,0) = CUBE;
+    level.At(9,0) = CUBE;
+    level.At(10,0) = CUBE;
+    level.At(11,0) = CUBE;
+    level.At(12,0) = CUBE;
+    level.At(13,0) = CUBE;
+    level.At(14,0) = CUBE;
+    level.At(15,0) = CUBE;
+    level.At(16,0) = CUBE;
+    level.At(17,0) = CUBE;
+    level.At(18,0) = CUBE;
+    level.At(19,0) = CUBE;
+    level.At(20,0) = CUBE;
+
+    level.At(0,1) = CUBE;
+    level.At(1,1) = CUBE;
+    level.At(2,1) = CUBE;
+    level.At(3,1) = CUBE;
+    level.At(4,1) = CUBE;
+    level.At(5,1) = CUBE;
+    level.At(6,1) = CUBE;
+    level.At(7,1) = CUBE;
+    level.At(8,1) = CUBE;
+
+    level.At(0,2) = CUBE;
+    level.At(1,2) = CUBE;
+
+    level.At(0,3) = CUBE;
+    level.At(1,3) = CUBE;
+
+    level.At(1,4) = CUBE;
+    level.At(2,4) = CUBE;
+
+    for (unsigned int i = 0; i < level.width; i++)
+    {
+        for (unsigned int j = 0; j < level.height; j++)
+        {
+            if (level.At(i, j) == CUBE)
+            {
+                float x = float(i) * 2.0f;
+                float y = float(j) * 2.0f;
+
+                x -= 10.f;
+                y -= 10.f;
+                
+                Cube* cube = new Cube(x, y, -10);
+                cube->Uniform("colour", glm::vec4(0.9, 0.7, 0.4, 1.0));
+                cube->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
+                cube->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
+                components.Add(cube);
+            }
+        }
+    }
+
+    bool dir = true;
 }
 
 void FirstScene::Update()
@@ -202,7 +273,14 @@ void FirstScene::Update()
     protagonist->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
     protagonist->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
 
-    pawn->matrix.Translate(glm::vec3(1.9, 0.0, 0.0));
+    if (dir)
+    {
+        pawn->matrix.Translate(glm::vec3(.09 * deltaTime, 0.0, 0.0));
+    }
+    else
+    {
+        pawn->matrix.Translate(glm::vec3(-.09 * deltaTime, 0.0, 0.0));
+    }
 
     if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
     {
@@ -213,23 +291,33 @@ void FirstScene::Update()
     if (input.Held(input.Key.A) || input.Held(input.Key.LEFT))
     {
         protagonist->matrix.Translate(glm::vec3(-.02 * deltaTime, 0.0, 0.0));
+        dir = false;
     }
     if (input.Held(input.Key.D) || input.Held(input.Key.RIGHT))
     {
         protagonist->matrix.Translate(glm::vec3(.02 * deltaTime, 0.0, 0.0));
+        dir = true;
     }
     if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.02 * deltaTime));
+        //protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.02 * deltaTime));
     }
     if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .02 * deltaTime));
+        //protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .02 * deltaTime));
     }
 }
 
 void FirstScene::UpdateAfterPhysics()
 {
+    if (camera->matrix.x > protagonist->matrix.x + 50)
+    {
+        camera->matrix.x++;
+    }
+    else if (camera->matrix.x < protagonist->matrix.x + 50)
+    {
+        camera->matrix.x--;
+    }
 }
 
 class Game : public IScene
@@ -308,6 +396,10 @@ class SplashScreen : public IScene
 private:
     Sprite *splash;
     Camera *camera;
+    Text *text1;
+    Text *text2;
+    Text *text3;
+    Text *text4;
     ITime  *timer;
 
 public:
@@ -325,8 +417,16 @@ void SplashScreen::Init()
 {
     splash = new Sprite("data/splash.png", 360, 120);
     camera = new Camera(glm::vec3(0, 0, 0), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
+    text1 = new Text("PLANET EARTH...", 100, 330);
+    text2 = new Text("I CALLED THIS PLACE HOME ONCE,", 100, 380);
+    text3 = new Text("LONG BEFORE EVIL HAUNTED", 100, 410);
+    text4 = new Text("THE PLANES AND WATERS.", 100, 440);
     timer  = Application::GetTime();
-    components.Add(splash);
+    //components.Add(splash);
+    components.Add(text1);
+    components.Add(text2);
+    components.Add(text3);
+    components.Add(text4);
     components.Add(camera);
 
     audio->PlaySound("data/intro.wav");
@@ -348,8 +448,8 @@ int main(int argc, char **argv)
 {
     Application application(argc, argv);
 
-    //application.AddScene(new SplashScreen());
     application.AddScene(new MainMenuScene());
+    application.AddScene(new SplashScreen());
     application.AddScene(new Game());
 
     return application.Exec();
