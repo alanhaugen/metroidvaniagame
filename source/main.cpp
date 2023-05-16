@@ -151,6 +151,58 @@ private:
     Text *health;
     bool dir;
     bool isCrouching;
+    bool up;
+
+    class Bullet : public IComponent
+    {
+    public:
+        Bullet(bool dir_, bool up_, glm::vec3 pos_)
+        {
+            if (dir_)
+            {
+                dir = 1.0f;
+            }
+            else
+            {
+                dir = -1.0f;
+            }
+
+            up = up_;
+
+            bullet = new Mesh("data/pawn.blend",
+                              "data/phong.vert",
+                              "data/phong.frag");
+            bullet->matrix.matrix[3].x = pos_.x;
+            bullet->matrix.matrix[3].y = pos_.y;
+            bullet->matrix.matrix[3].z = pos_.z;
+
+            speed = 0.1f;
+        }
+
+        void Update()
+        {
+            if (up)
+            {
+                bullet->matrix.Translate(glm::vec3(0.0f, speed * deltaTime, 0.0f));
+            }
+            else
+            {
+                bullet->matrix.Translate(glm::vec3(dir * speed * deltaTime, 0.0f, 0.0f));
+            }
+            bullet->Update();
+        }
+
+        void UpdateAfterPhysics()
+        {
+            // TODO: delete bullet when collided
+        }
+
+    private:
+        Mesh* bullet;
+        float dir;
+        bool up;
+        float speed;
+    };
 
 public:
     FirstScene();
@@ -263,6 +315,7 @@ void FirstScene::Init()
 
     dir = true;
     isCrouching = false;
+    up = false;
 }
 
 void FirstScene::Update()
@@ -284,10 +337,30 @@ void FirstScene::Update()
         pawn->matrix.Translate(glm::vec3(-.09 * deltaTime, 0.0, 0.0));
     }
 
+    if (input.Held(input.Key.SHIFT) || input.Held(input.Key.S))
+    {
+        isCrouching = true;
+    }
+    else
+    {
+        isCrouching = false;
+    }
+
     if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
     {
-        pawn->Show();
-        pawn->matrix.matrix[3] = protagonist->matrix.matrix[3];
+        glm::vec3 pos(
+                    protagonist->matrix.matrix[3].x,
+                    protagonist->matrix.matrix[3].y,
+                    protagonist->matrix.matrix[3].z);
+
+        if (isCrouching)
+        {
+            pos.y -= 3.0f;
+        }
+
+        Bullet* newBullet = new Bullet(dir, up, pos);
+
+        components.Add(newBullet);
     }
 
     if (input.Held(input.Key.A) || input.Held(input.Key.LEFT))
@@ -302,7 +375,11 @@ void FirstScene::Update()
     }
     if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
-        //protagonist->matrix.Translate(glm::vec3(0.0, 0.0, -.02 * deltaTime));
+        up = true;
+    }
+    else
+    {
+        up = false;
     }
     if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
@@ -314,11 +391,11 @@ void FirstScene::UpdateAfterPhysics()
 {
     if (camera->matrix.x > protagonist->matrix.x + 50)
     {
-        camera->matrix.x++;
+        camera->matrix.position.x++;
     }
     else if (camera->matrix.x < protagonist->matrix.x + 50)
     {
-        camera->matrix.x--;
+        camera->matrix.position.x--;
     }
 }
 
