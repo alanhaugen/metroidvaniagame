@@ -150,6 +150,7 @@ private:
     Mesh *gun;
     Text *health;
     bool dir;
+    bool isCrouching;
 
 public:
     FirstScene();
@@ -260,7 +261,8 @@ void FirstScene::Init()
         }
     }
 
-    bool dir = true;
+    dir = true;
+    isCrouching = false;
 }
 
 void FirstScene::Update()
