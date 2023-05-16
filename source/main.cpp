@@ -35,7 +35,7 @@ void MainMenuScene::Init()
 {
     camera = new Camera();
     cursor = new Sprite("data/cursor.png");
-    text = new Text("METROIDVANIA", 500, 100);
+    text = new Text("REVIVAL", 500, 100);
 
     option1 = new Text("START GAME", 500, 300);
     option2 = new Text("FULLSCREEN", 500, 400);
