@@ -450,8 +450,8 @@ int main(int argc, char **argv)
 {
     Application application(argc, argv);
 
-    application.AddScene(new MainMenuScene());
-    application.AddScene(new SplashScreen());
+//    application.AddScene(new MainMenuScene());
+//    application.AddScene(new SplashScreen());
     application.AddScene(new Game());
 
     return application.Exec();
