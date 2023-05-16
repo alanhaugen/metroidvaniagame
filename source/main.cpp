@@ -152,6 +152,9 @@ private:
     bool dir;
     bool isCrouching;
     bool up;
+    bool jumping;
+    float startY;
+    float jumpforce;
 
     class Bullet : public Component
     {
@@ -315,7 +318,9 @@ void FirstScene::Init()
 
     dir = true;
     isCrouching = false;
+    jumping = false;
     up = false;
+    startY = protagonist->matrix.matrix[3].y;
 }
 
 void FirstScene::Update()
@@ -344,6 +349,27 @@ void FirstScene::Update()
     else
     {
         isCrouching = false;
+    }
+
+    if (input.Held(input.Key.CTRL) || input.Held(input.Key.ALT))
+    {
+        if (jumping == false)
+        {
+            jumping = true;
+            jumpforce = 0.08f;
+        }
+    }
+
+    if (jumping)
+    {
+        protagonist->matrix.Translate(glm::vec3(0, jumpforce * deltaTime, 0));
+        jumpforce -= 0.006f;
+
+        if (protagonist->matrix.position.y < startY)
+        {
+            jumping = false;
+            protagonist->matrix.position.y = startY;
+        }
     }
 
     if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
