@@ -153,7 +153,7 @@ private:
     bool isCrouching;
     bool up;
 
-    class Bullet : public IComponent
+    class Bullet : public Component
     {
     public:
         Bullet(bool dir_, bool up_, glm::vec3 pos_)
