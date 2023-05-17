@@ -374,6 +374,12 @@ void FirstScene::Update()
     protagonist->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
     protagonist->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
 
+    if (physics->Collide(protagonist->collisionBox))
+    {
+        //protagonist->matrix.position = physics->Collide(protagonist->collisionBox)->direction;
+        Log("collision");
+    }
+
     if (dir)
     {
         pawn->matrix.Translate(glm::vec3(.09 * deltaTime, 0.0, 0.0));
