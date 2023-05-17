@@ -151,7 +151,7 @@ void PauseScene::Update()
 
     if (option == 1)
     {
-        if (input.Pressed(input.Key.DOWN) || input.Pressed(input.Key.S))
+        if (input.Pressed(input.Key.DOWN) || input.Pressed(input.Key.S))
         {
             selector->y += 50.0f;
             option = 2;
@@ -159,7 +159,7 @@ void PauseScene::Update()
     }
     else
     {
-        if (input.Pressed(input.Key.UP) || input.Pressed(input.Key.W))
+        if (input.Pressed(input.Key.UP) || input.Pressed(input.Key.W))
         {
             selector->y -= 50.0f;
             option = 1;
@@ -383,7 +383,7 @@ void FirstScene::Update()
         pawn->matrix.Translate(glm::vec3(-.09 * deltaTime, 0.0, 0.0));
     }
 
-    if (input.Held(input.Key.SHIFT) || input.Held(input.Key.S))
+    if (input.Held(input.Key.SHIFT) || input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
         isCrouching = true;
     }
@@ -524,7 +524,7 @@ void Game::Update()
     }
 
     // Update pause screen (done last to allow update scene to process input)
-    if (input.Pressed(input.Key.P) || input.Pressed(input.Key.Q) || input.Pressed(input.Key.ESCAPE))
+    if (input.Pressed(input.Key.P) || input.Pressed(input.Key.Q) || input.Pressed(input.Key.ESCAPE))
     {
         paused = !paused;
     }
