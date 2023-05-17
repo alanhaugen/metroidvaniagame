@@ -106,6 +106,12 @@ private:
     Sprite *cursor;
     Text *text;
 
+    Text *option1;
+    Text *option2;
+    Text *selector;
+
+    int option;
+
 public:
     PauseScene();
     void Init();
@@ -123,15 +129,50 @@ void PauseScene::Init()
     cursor = new Sprite("data/cursor.png");
     text = new Text("PAUSE", 500, 100);
 
+    option1 = new Text("CONTINUE", 500, 200);
+    option2 = new Text("QUIT", 500, 250);
+    selector = new Text(">", 470, 200);
+
+    option = 1;
+
     components.Add(camera);
     components.Add(cursor);
     components.Add(text);
+
+    components.Add(option1);
+    components.Add(option2);
+    components.Add(selector);
 }
 
 void PauseScene::Update()
 {
     cursor->x = input.Mouse.x;
     cursor->y = input.Mouse.y;
+
+    if (option == 1)
+    {
+        if (input.Pressed(input.Key.DOWN) || input.Pressed(input.Key.S))
+        {
+            selector->y += 50.0f;
+            option = 2;
+        }
+    }
+    else
+    {
+        if (input.Pressed(input.Key.UP) || input.Pressed(input.Key.W))
+        {
+            selector->y -= 50.0f;
+            option = 1;
+        }
+    }
+
+    if (input.Pressed(input.Key.ENTER))
+    {
+        if (option == 2)
+        {
+            Application::Quit();
+        }
+    }
 }
 
 void PauseScene::UpdateAfterPhysics()
@@ -457,15 +498,6 @@ void Game::Init()
 
 void Game::Update()
 {
-    if (input.Pressed(input.Key.P))
-    {
-        paused = !paused;
-    }
-    else if (input.Pressed(input.Key.Q) || input.Pressed(input.Key.ESCAPE))
-    {
-        Application::Quit();
-    }
-
     if (paused)
     {
         activeScene = pauseScreen;
@@ -489,6 +521,19 @@ void Game::Update()
     for (unsigned int i = 0; i < activeScene->components.Size(); i++)
     {
         (*activeScene->components[i])->UpdateAfterPhysics();
+    }
+
+    // Update pause screen (done last to allow update scene to process input)
+    if (input.Pressed(input.Key.P) || input.Pressed(input.Key.Q) || input.Pressed(input.Key.ESCAPE))
+    {
+        paused = !paused;
+    }
+    if (paused)
+    {
+        if (input.Pressed(input.Key.F) || input.Pressed(input.Key.ENTER))
+        {
+            paused = false;
+        }
     }
 }
 
