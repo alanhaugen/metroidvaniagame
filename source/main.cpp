@@ -194,7 +194,6 @@ private:
     bool isCrouching;
     bool up;
     bool jumping;
-    float startY;
     float jumpforce;
 
     class Bullet : public Component
@@ -348,7 +347,9 @@ void FirstScene::Init()
                 x -= 10.f;
                 y -= 10.f;
                 
-                Cube* cube = new Cube(x, y, -10);
+                Actor* cube = new Actor();
+                cube->Add(new Cube());
+                cube->matrix.Translate(glm::vec3(x, y, -10));
                 cube->Uniform("colour", glm::vec4(0.9, 0.7, 0.4, 1.0));
                 cube->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
                 cube->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
@@ -361,7 +362,6 @@ void FirstScene::Init()
     isCrouching = false;
     jumping = false;
     up = false;
-    startY = protagonist->matrix.matrix[3].y;
 }
 
 void FirstScene::Update()
@@ -373,12 +373,6 @@ void FirstScene::Update()
     room->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
     protagonist->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
     protagonist->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
-
-    if (physics->Collide(protagonist->collisionBox))
-    {
-        //protagonist->matrix.position = physics->Collide(protagonist->collisionBox)->direction;
-        Log("collision");
-    }
 
     if (dir)
     {
@@ -403,21 +397,12 @@ void FirstScene::Update()
         if (jumping == false)
         {
             jumping = true;
-            jumpforce = 0.08f;
+            jumpforce = 0.18f;
         }
     }
 
-    if (jumping)
-    {
-        protagonist->matrix.Translate(glm::vec3(0, jumpforce * deltaTime, 0));
-        jumpforce -= 0.006f;
-
-        if (protagonist->matrix.position.y < startY)
-        {
-            jumping = false;
-            protagonist->matrix.position.y = startY;
-        }
-    }
+    protagonist->matrix.Translate(glm::vec3(0, jumpforce, 0));// * deltaTime, 0));
+    jumpforce -= 0.006f;
 
     if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
     {
@@ -462,6 +447,14 @@ void FirstScene::Update()
 
 void FirstScene::UpdateAfterPhysics()
 {
+    if (physics->Collide(protagonist->collisionBox))
+    {
+        protagonist->matrix.Translate(glm::vec3(0.0f, -jumpforce, 0.0f));
+        jumpforce = 0;
+        jumping = false;
+                // = physics->Collide(protagonist->collisionBox)->direction;
+    }
+
     if (camera->matrix.x > protagonist->matrix.x + 50)
     {
         camera->matrix.position.x++;
