@@ -362,6 +362,7 @@ void FirstScene::Init()
     isCrouching = false;
     jumping = false;
     up = false;
+    jumpforce = 0.0f;
 }
 
 void FirstScene::Update()
