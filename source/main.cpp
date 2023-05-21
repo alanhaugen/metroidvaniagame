@@ -260,15 +260,16 @@ FirstScene::FirstScene()
 
 void FirstScene::Init()
 {
-    camera = new Camera(glm::vec3(0, 3, 15), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
+    camera = new Camera(glm::vec3(0, -4.8, -5.5), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0); //glm::vec3(0, 3, 15)
     cursor = new Sprite("data/cursor.png");
     health = new Text("100");
     protagonist = new Actor();
-    protagonist->Add(new Mesh("data/king.blend",
-                    "data/phong.vert",
-                    "data/phong.frag"));
+    protagonist->Add(new Mesh("data/player/player_idle.blend",
+                    "data/simple.vert",
+                    "data/simple.frag"));
     protagonist->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
     protagonist->matrix.Translate(glm::vec3(0,-5,-10));
+    protagonist->matrix.Rotate(3.141593 * 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     light = new PointLight(glm::vec3(-9.683014, 16.498363, 7.318779));
     gun = new Mesh("data/queen.blend",
                    "data/phong.vert",
@@ -279,6 +280,7 @@ void FirstScene::Init()
     room->matrix.Translate(glm::vec3(0,0,-30));
     room->Uniform("colour", glm::vec4(0.9, 0.7, 0.4, 1.0));
     gun->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
+    gun->Hide();
     //gun->Rotate(45,0,0);
     pawn = new Mesh("data/pawn.blend");
     pawn->Hide();
