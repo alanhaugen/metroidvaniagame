@@ -268,7 +268,7 @@ void FirstScene::Init()
                     "data/phong.vert",
                     "data/phong.frag"));
     protagonist->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
-    protagonist->matrix.Translate(glm::vec3(0,-7,-10));
+    protagonist->matrix.Translate(glm::vec3(0,-5,-10));
     light = new PointLight(glm::vec3(-9.683014, 16.498363, 7.318779));
     gun = new Mesh("data/queen.blend",
                    "data/phong.vert",
@@ -450,10 +450,9 @@ void FirstScene::UpdateAfterPhysics()
 {
     if (physics->Collide(protagonist->collisionBox))
     {
-        protagonist->matrix.Translate(glm::vec3(0.0f, -jumpforce, 0.0f));
+        protagonist->matrix.Translate(physics->Collide(protagonist->collisionBox)->direction);
         jumpforce = 0;
         jumping = false;
-                // = physics->Collide(protagonist->collisionBox)->direction;
     }
 
     if (camera->matrix.x > protagonist->matrix.x + 50)
