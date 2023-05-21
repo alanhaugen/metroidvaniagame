@@ -292,54 +292,62 @@ void FirstScene::Init()
 
     Grid level(32, 32);
 
-    unsigned int CUBE = 1;
+    enum
+    {
+        GROUND = 1,
+        WALL_LEFT,
+        WALL_RIGHT
+    };
 
-    level.At(0,0) = CUBE;
-    level.At(1,0) = CUBE;
-    level.At(2,0) = CUBE;
-    level.At(3,0) = CUBE;
-    level.At(4,0) = CUBE;
-    level.At(5,0) = CUBE;
-    level.At(6,0) = CUBE;
-    level.At(7,0) = CUBE;
-    level.At(8,0) = CUBE;
-    level.At(9,0) = CUBE;
-    level.At(10,0) = CUBE;
-    level.At(11,0) = CUBE;
-    level.At(12,0) = CUBE;
-    level.At(13,0) = CUBE;
-    level.At(14,0) = CUBE;
-    level.At(15,0) = CUBE;
-    level.At(16,0) = CUBE;
-    level.At(17,0) = CUBE;
-    level.At(18,0) = CUBE;
-    level.At(19,0) = CUBE;
-    level.At(20,0) = CUBE;
+    level.At(0,0) = GROUND;
+    level.At(1,0) = GROUND;
+    level.At(2,0) = GROUND;
+    level.At(3,0) = GROUND;
+    level.At(4,0) = GROUND;
+    level.At(5,0) = GROUND;
+    level.At(6,0) = GROUND;
+    level.At(7,0) = GROUND;
+    level.At(8,0) = GROUND;
+    level.At(9,0) = GROUND;
+    level.At(10,0) = GROUND;
+    level.At(11,0) = GROUND;
+    level.At(12,0) = GROUND;
+    level.At(13,0) = GROUND;
+    level.At(14,0) = GROUND;
+    level.At(15,0) = GROUND;
+    level.At(16,0) = GROUND;
+    level.At(17,0) = GROUND;
+    level.At(18,0) = GROUND;
+    level.At(19,0) = GROUND;
+    level.At(20,0) = GROUND;
 
-    level.At(0,1) = CUBE;
-    level.At(1,1) = CUBE;
-    level.At(2,1) = CUBE;
-    level.At(3,1) = CUBE;
-    level.At(4,1) = CUBE;
-    level.At(5,1) = CUBE;
-    level.At(6,1) = CUBE;
-    level.At(7,1) = CUBE;
-    level.At(8,1) = CUBE;
+    level.At(0,1) = GROUND;
+    level.At(1,1) = GROUND;
+    level.At(2,1) = GROUND;
+    level.At(3,1) = GROUND;
+    level.At(4,1) = GROUND;
+    level.At(5,1) = GROUND;
+    level.At(6,1) = GROUND;
+    level.At(7,1) = GROUND;
+    level.At(8,1) = WALL_RIGHT;
 
-    level.At(0,2) = CUBE;
-    level.At(1,2) = CUBE;
+    level.At(0,2) = GROUND;
+    level.At(1,2) = WALL_RIGHT;
 
-    level.At(0,3) = CUBE;
-    level.At(1,3) = CUBE;
+    level.At(0,3) = GROUND;
+    level.At(1,3) = WALL_RIGHT;
 
-    level.At(1,4) = CUBE;
-    level.At(2,4) = CUBE;
+    level.At(1,4) = GROUND;
+    level.At(2,4) = WALL_RIGHT;
+
+    level.At(8,4) = GROUND;
+    level.At(9,4) = GROUND;
 
     for (unsigned int i = 0; i < level.width; i++)
     {
         for (unsigned int j = 0; j < level.height; j++)
         {
-            if (level.At(i, j) == CUBE)
+            if (level.At(i, j) == GROUND || level.At(i, j) == WALL_LEFT || level.At(i, j) == WALL_RIGHT)
             {
                 float x = float(i) * 2.0f;
                 float y = float(j) * 2.0f;
@@ -350,6 +358,20 @@ void FirstScene::Init()
                 Actor* cube = new Actor();
                 cube->Add(new Cube());
                 cube->matrix.Translate(glm::vec3(x, y, -10));
+
+                if (level.At(i, j) == GROUND)
+                {
+                    cube->collisionBox->type = "GROUND";
+                }
+                else if (level.At(i, j) == WALL_LEFT)
+                {
+                    cube->collisionBox->type = "WALL_LEFT";
+                }
+                else if (level.At(i, j) == WALL_RIGHT)
+                {
+                    cube->collisionBox->type = "WALL_RIGHT";
+                }
+
                 cube->Uniform("colour", glm::vec4(0.9, 0.7, 0.4, 1.0));
                 cube->Uniform("u_lightPosition", static_cast<glm::vec3>(light->position));
                 cube->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
@@ -448,11 +470,21 @@ void FirstScene::Update()
 
 void FirstScene::UpdateAfterPhysics()
 {
-    if (physics->Collide(protagonist->collisionBox))
+    if (physics->Collide(protagonist->collisionBox, "GROUND"))
     {
-        protagonist->matrix.Translate(physics->Collide(protagonist->collisionBox)->direction);
+        //protagonist->matrix.Translate(glm::vec3(0.0f, physics->Collide(protagonist->collisionBox)->direction.y, 0.0f));
         jumpforce = 0;
         jumping = false;
+    }
+
+    if (physics->Collide(protagonist->collisionBox, "WALL_LEFT"))
+    {
+        protagonist->matrix.Translate(glm::vec3(-.02 * deltaTime, 0.0f, 0.0f));
+    }
+
+    if (physics->Collide(protagonist->collisionBox, "WALL_RIGHT"))
+    {
+        protagonist->matrix.Translate(glm::vec3(.02 * deltaTime, 0.0f, 0.0f));
     }
 
     if (camera->matrix.x > protagonist->matrix.x + 50)
