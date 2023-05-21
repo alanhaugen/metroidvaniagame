@@ -5,6 +5,7 @@
 #include <core/components/pointlight.h>
 #include <core/components/cube.h>
 #include <core/components/grid.h>
+#include <core/components/fpscounter.h>
 
 class MainMenuScene : public IScene
 {  
@@ -190,6 +191,7 @@ private:
     Mesh *room;
     Mesh *gun;
     Text *health;
+    FPSCounter *counter;
     bool dir;
     bool isCrouching;
     bool up;
@@ -262,9 +264,10 @@ void FirstScene::Init()
 {
     camera = new Camera(glm::vec3(0, -4.8, -5.5), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0); //glm::vec3(0, 3, 15)
     cursor = new Sprite("data/cursor.png");
-    health = new Text("100");
+    counter = new FPSCounter();
+    health = new Text("100", 0,0);
     protagonist = new Actor();
-    protagonist->Add(new Mesh("data/player/player_idle.blend",
+    protagonist->Add(new Mesh("data/player/player.obj",
                     "data/simple.vert",
                     "data/simple.frag"));
     protagonist->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
@@ -291,6 +294,7 @@ void FirstScene::Init()
     //components.Add(room);
     components.Add(pawn);
     components.Add(health);
+    components.Add(counter);
 
     Grid level(32, 32);
 
