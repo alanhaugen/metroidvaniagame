@@ -190,12 +190,16 @@ private:
     Mesh *pawn;
     Mesh *room;
     Mesh *gun;
+    Mesh *idleMesh;
+    Mesh *runningMesh;
+    Mesh *scenery;
     Text *health;
     FPSCounter *counter;
     bool dir;
     bool isCrouching;
     bool up;
     bool jumping;
+    bool running;
     float jumpforce;
 
     class Bullet : public Component
@@ -262,14 +266,26 @@ FirstScene::FirstScene()
 
 void FirstScene::Init()
 {
-    camera = new Camera(glm::vec3(0, -4.8, -5.5), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0); //glm::vec3(0, 3, 15)
+    camera = new Camera(glm::vec3(0, 3, 15), glm::vec3(0.0, 1.0, 0.0), 0, 0, 0);
     cursor = new Sprite("data/cursor.png");
     counter = new FPSCounter();
     health = new Text("100", 0,0);
     protagonist = new Actor();
-    protagonist->Add(new Mesh("data/player/player.obj",
-                    "data/simple.vert",
-                    "data/simple.frag"));
+
+    idleMesh = new Mesh("data/player/player_idle_1frame.blend",
+                        "data/simple.vert",
+                        "data/simple.frag");
+    runningMesh = new Mesh("data/player/player_run.blend",
+                           "data/simple.vert",
+                           "data/simple.frag");
+
+    scenery = new Mesh("data/enviroment1/enviroment.blend",
+                        "data/simple.vert",
+                        "data/simple.frag");
+
+    runningMesh->Hide();
+    protagonist->Add(idleMesh);
+    protagonist->Add(runningMesh);
     protagonist->Uniform("colour", glm::vec4(0.4, 0.7, 0.4, 1.0));
     protagonist->matrix.Translate(glm::vec3(0,-5,-10));
     protagonist->matrix.Rotate(3.141593 * 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -295,12 +311,14 @@ void FirstScene::Init()
     components.Add(pawn);
     components.Add(health);
     components.Add(counter);
+    //components.Add(scenery);
 
     Grid level(32, 32);
 
     enum
     {
         GROUND = 1,
+        FLOOR,
         WALL_LEFT,
         WALL_RIGHT
     };
@@ -314,27 +332,27 @@ void FirstScene::Init()
     level.At(6,0) = GROUND;
     level.At(7,0) = GROUND;
     level.At(8,0) = GROUND;
-    level.At(9,0) = GROUND;
-    level.At(10,0) = GROUND;
-    level.At(11,0) = GROUND;
-    level.At(12,0) = GROUND;
-    level.At(13,0) = GROUND;
-    level.At(14,0) = GROUND;
-    level.At(15,0) = GROUND;
-    level.At(16,0) = GROUND;
-    level.At(17,0) = GROUND;
-    level.At(18,0) = GROUND;
-    level.At(19,0) = GROUND;
-    level.At(20,0) = GROUND;
+    level.At(9,0) = FLOOR;
+    level.At(10,0) = FLOOR;
+    level.At(11,0) = FLOOR;
+    level.At(12,0) = FLOOR;
+    level.At(13,0) = FLOOR;
+    level.At(14,0) = FLOOR;
+    level.At(15,0) = FLOOR;
+    level.At(16,0) = FLOOR;
+    level.At(17,0) = FLOOR;
+    level.At(18,0) = FLOOR;
+    level.At(19,0) = FLOOR;
+    level.At(20,0) = FLOOR;
 
     level.At(0,1) = GROUND;
     level.At(1,1) = GROUND;
-    level.At(2,1) = GROUND;
-    level.At(3,1) = GROUND;
-    level.At(4,1) = GROUND;
-    level.At(5,1) = GROUND;
-    level.At(6,1) = GROUND;
-    level.At(7,1) = GROUND;
+    level.At(2,1) = FLOOR;
+    level.At(3,1) = FLOOR;
+    level.At(4,1) = FLOOR;
+    level.At(5,1) = FLOOR;
+    level.At(6,1) = FLOOR;
+    level.At(7,1) = FLOOR;
     level.At(8,1) = WALL_RIGHT;
 
     level.At(0,2) = GROUND;
@@ -355,14 +373,14 @@ void FirstScene::Init()
         {
             if (level.At(i, j) == GROUND || level.At(i, j) == WALL_LEFT || level.At(i, j) == WALL_RIGHT)
             {
-                float x = float(i) * 2.0f;
-                float y = float(j) * 2.0f;
+                float x = float(i) * 2.0f * 5.0f;
+                float y = float(j) * 2.0f * 5.0f;
 
                 x -= 10.f;
                 y -= 10.f;
                 
                 Actor* cube = new Actor();
-                cube->Add(new Cube());
+                cube->Add(new Cube(0,0,0, 4,4,4));
                 cube->matrix.Translate(glm::vec3(x, y, -10));
 
                 if (level.At(i, j) == GROUND)
@@ -383,12 +401,31 @@ void FirstScene::Init()
                 cube->Uniform("u_cameraPosition", static_cast<glm::vec3>(camera->position));
                 components.Add(cube);
             }
+            if (level.At(i, j) == FLOOR)
+            {
+                float x = float(i) * 2.0f * 5.0f;
+                float y = float(j) * 2.0f * 5.0f;
+
+                x -= 10.f;
+                y -= 10.f;
+                
+                Actor* cube = new Actor();
+                cube->Add(new Mesh("data/enviroment1/enviroment.blend",
+                        "data/simple.vert",
+                        "data/simple.frag"));
+                cube->matrix.Translate(glm::vec3(x, y, -15));
+
+                cube->collisionBox->type = "GROUND";
+
+                components.Add(cube);
+            }
         }
     }
 
     dir = true;
     isCrouching = false;
     jumping = false;
+    running = false;
     up = false;
     jumpforce = 0.0f;
 }
@@ -433,6 +470,8 @@ void FirstScene::Update()
     protagonist->matrix.Translate(glm::vec3(0, jumpforce, 0));// * deltaTime, 0));
     jumpforce -= 0.006f;
 
+    running = false;
+
     if (input.Pressed(input.Key.SPACE) || input.Mouse.Pressed)
     {
         glm::vec3 pos(
@@ -454,11 +493,13 @@ void FirstScene::Update()
     {
         protagonist->matrix.Translate(glm::vec3(-.02 * deltaTime, 0.0, 0.0));
         dir = false;
+        running = true;
     }
     if (input.Held(input.Key.D) || input.Held(input.Key.RIGHT))
     {
         protagonist->matrix.Translate(glm::vec3(.02 * deltaTime, 0.0, 0.0));
         dir = true;
+        running = true;
     }
     if (input.Held(input.Key.W) || input.Held(input.Key.UP))
     {
@@ -471,6 +512,17 @@ void FirstScene::Update()
     if (input.Held(input.Key.S) || input.Held(input.Key.DOWN))
     {
         //protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .02 * deltaTime));
+    }
+
+    if (running)
+    {
+        runningMesh->Show();
+        idleMesh->Hide();
+    }
+    else
+    {
+        runningMesh->Hide();
+        idleMesh->Show();
     }
 }
 
