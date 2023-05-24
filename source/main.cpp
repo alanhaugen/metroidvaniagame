@@ -196,6 +196,7 @@ private:
     Text *health;
     FPSCounter *counter;
     int dir;
+    int oldDir;
     bool isCrouching;
     bool up;
     bool jumping;
@@ -424,6 +425,7 @@ void FirstScene::Init()
     }
 
     dir = 1.0;
+    oldDir = 1.0;
     isCrouching = false;
     jumping = false;
     running = false;
@@ -538,6 +540,13 @@ void FirstScene::Update()
     {
         //protagonist->matrix.Translate(glm::vec3(0.0, 0.0, .02 * deltaTime));
     }
+
+    if (oldDir != dir)
+    {
+        // Rotate protagonist to face the right way
+    }
+
+    oldDir = dir;
 
     if (running)
     {
